@@ -12,8 +12,10 @@ test('test',async ({ page }) => {
 
   // Selecteer activiteit + week
   await page.locator('#ctl00_MainContent__advanceSearchResultsUserControl_Activities_ctrl0_lnkActivitySelect_lg').click();
-  await page.getByRole('button', { name: 'Next Week ' }).dblclick();
-  await page.getByRole('button', { name: 'Next Week ' }).dblclick();
+  await page.getByRole('button', { name: 'Next Week ' }).click();
+  await page.getByRole('button', { name: 'Next Week ' }).click();
+  await page.getByRole('button', { name: 'Next Week ' }).click();
+  await page.getByRole('button', { name: 'Next Week ' }).click();
 
   // Wacht en probeer maximaal 1000 keer te klikken
   let clicked = false;
@@ -26,22 +28,60 @@ test('test',async ({ page }) => {
 
       await page.goto('https://reserveer.clubpellikaan.nl/Connect/mrmProductStatus.aspx');
 
-      await page.locator('input[name="ctl00\\$MainContent\\$grdResourceView\\$ctl12\\$ctl02"]').click({ timeout: 1000 });
+      //Padel baan 2 19:45
+      await page.locator('input[name="ctl00\\$MainContent\\$grdResourceView\\$ctl04\\$ctl02"]').click({ timeout: 1000 });
+
       clicked = true;
-      console.log('Klikken gelukt!');
+      console.log('Klikken gelukt! Eerste baan is gereseerveerd.');
     } catch (e) {
       console.log('Knop nog niet beschikbaar, opnieuw proberen over 2 seconden...');
       await page.waitForTimeout(1000);
       attempts++;
     }
   }
-
+await page.getByRole('button', { name: 'Book' }).click();
+    // Check of het gelukt is om te klikken
   if (!clicked) {
     console.log(`Na ${maxAttempts} pogingen is het nog steeds niet gelukt om te klikken.`);
     return;
   }
 
+  await page.getByRole('link', { name: 'Home' }).click();
+  await page.locator('#ctl00_MainContent__advanceSearchResultsUserControl_Activities_ctrl0_lnkActivitySelect_lg').click();
+  await page.getByRole('button', { name: 'Next Week ' }).click();
+  await page.getByRole('button', { name: 'Next Week ' }).click();
+  await page.getByRole('button', { name: 'Next Week ' }).click();
+  await page.getByRole('button', { name: 'Next Week ' }).click();
+
+    let clicked1 = false;
+    let attempts1 = 0;
+
+  while (!clicked1 && attempts1 < maxAttempts) {
+    try {
+      console.log(`Poging ${attempts1 + 1}`);
+
+      await page.goto('https://reserveer.clubpellikaan.nl/Connect/mrmProductStatus.aspx');
+
+      //Padel baan 2 20:30
+      await page.locator('input[name="ctl00\\$MainContent\\$grdResourceView\\$ctl05\\$ctl02"]').click({ timeout: 1000 });
+
+      clicked1 = true;
+      console.log('Klikken gelukt! Tweede baan is gereseerveerd.');
+    } catch (e) {
+      console.log('Knop nog niet beschikbaar, opnieuw proberen over 2 seconden...');
+      await page.waitForTimeout(1000);
+      attempts1++;
+    }
+  }
+
+       await page.getByRole('button', { name: 'Book' }).click();
+  // Check of het gelukt is om te klikken
+  if (!clicked1) {
+    console.log(`Na ${maxAttempts} pogingen is het nog steeds niet gelukt om te klikken.`);
+    return;
+  }
+
   // Boek en logout
-  await page.getByRole('button', { name: 'Book' }).click();
+  //await page.getByRole('button', { name: 'Book' }).click();
   await page.getByRole('link', { name: 'Logout' }).click();
 });
