@@ -16,6 +16,7 @@ test('test',async ({ page }) => {
   await page.getByRole('button', { name: 'Next Week ' }).click();
   await page.getByRole('button', { name: 'Next Week ' }).click();
   await page.getByRole('button', { name: 'Next Week ' }).click();
+  await page.getByRole('button', { name: 'Next Week ' }).click();
 
   // Wacht en probeer maximaal 1000 keer te klikken
   let clicked = false;
@@ -29,7 +30,7 @@ test('test',async ({ page }) => {
       await page.goto('https://reserveer.clubpellikaan.nl/Connect/mrmProductStatus.aspx');
 
       //Padel baan 2 19:45
-      await page.locator('input[name="ctl00\\$MainContent\\$grdResourceView\\$ctl04\\$ctl02"]').click({ timeout: 1000 });
+      await page.locator('input[name="ctl00\\$MainContent\\$grdResourceView\\$ctl19\\$ctl01"]').click({ timeout: 1000 });
 
       clicked = true;
       console.log('Klikken gelukt! Eerste baan is gereseerveerd.');
@@ -52,6 +53,7 @@ await page.getByRole('button', { name: 'Book' }).click();
   await page.getByRole('button', { name: 'Next Week ' }).click();
   await page.getByRole('button', { name: 'Next Week ' }).click();
   await page.getByRole('button', { name: 'Next Week ' }).click();
+  await page.getByRole('button', { name: 'Next Week ' }).click();
 
     let clicked1 = false;
     let attempts1 = 0;
@@ -63,7 +65,7 @@ await page.getByRole('button', { name: 'Book' }).click();
       await page.goto('https://reserveer.clubpellikaan.nl/Connect/mrmProductStatus.aspx');
 
       //Padel baan 2 20:30
-      await page.locator('input[name="ctl00\\$MainContent\\$grdResourceView\\$ctl05\\$ctl02"]').click({ timeout: 1000 });
+      await page.locator('input[name="ctl00\\$MainContent\\$grdResourceView\\$ctl20\\$ctl01"]').click({ timeout: 1000 });
 
       clicked1 = true;
       console.log('Klikken gelukt! Tweede baan is gereseerveerd.');
