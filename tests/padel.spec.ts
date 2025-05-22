@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-test('test', async ({ page }) => {
+test('test',async ({ page }) => {
+  test.setTimeout(600_000);
   await page.goto('https://reserveer.clubpellikaan.nl/Connect/mrmLogin.aspx');
 
   // Login
@@ -11,7 +12,8 @@ test('test', async ({ page }) => {
 
   // Selecteer activiteit + week
   await page.locator('#ctl00_MainContent__advanceSearchResultsUserControl_Activities_ctrl0_lnkActivitySelect_lg').click();
-  await page.getByRole('button', { name: 'Next Week ' }).click();
+  await page.getByRole('button', { name: 'Next Week ' }).dblclick();
+  await page.getByRole('button', { name: 'Next Week ' }).dblclick();
 
   // Wacht en probeer maximaal 1000 keer te klikken
   let clicked = false;
@@ -29,7 +31,7 @@ test('test', async ({ page }) => {
       console.log('Klikken gelukt!');
     } catch (e) {
       console.log('Knop nog niet beschikbaar, opnieuw proberen over 2 seconden...');
-      await page.waitForTimeout(2000);
+      await page.waitForTimeout(1000);
       attempts++;
     }
   }
