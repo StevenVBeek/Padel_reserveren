@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('test',async ({ page }) => {
-  test.setTimeout(600_000);
+test('test', async ({ page }) => {
   await page.goto('https://reserveer.clubpellikaan.nl/Connect/mrmLogin.aspx');
 
   // Login
@@ -30,7 +29,7 @@ test('test',async ({ page }) => {
       console.log('Klikken gelukt!');
     } catch (e) {
       console.log('Knop nog niet beschikbaar, opnieuw proberen over 2 seconden...');
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(2000);
       attempts++;
     }
   }
