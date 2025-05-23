@@ -53,7 +53,6 @@ await page.getByRole('button', { name: 'Book' }).click();
   await page.getByRole('button', { name: 'Next Week ' }).click();
   await page.getByRole('button', { name: 'Next Week ' }).click();
   await page.getByRole('button', { name: 'Next Week ' }).click();
-  await page.getByRole('button', { name: 'Next Week ' }).click();
 
     let clicked1 = false;
     let attempts1 = 0;
