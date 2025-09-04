@@ -1,30 +1,52 @@
 name: Playwright Tests
+
 on:
   workflow_dispatch:
   schedule:
-   - cron: "50 21 * * *"
+    - cron: "50 21 * * *"
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+
 jobs:
   test:
     timeout-minutes: 60
     runs-on: self-hosted
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: lts/*
-    - name: Install dependencies
-      run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: npx playwright test tests/padel.spec.ts --project=chromium
-    - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+      # Stap 1: Checkout repository
+      - uses: actions/checkout@v4
+
+      # Stap 2: Cache Node modules voor snellere builds
+      - name: Cache Node modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # Stap 3: Setup Node.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      # Stap 4: Installeer dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # Stap 5: Installeer Playwright browsers
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      # Stap 6: Run Playwright tests (Chromium headless, 2 parallelle workers, HTML-report)
+      - name: Run Playwright tests
+        run: npx playwright test tests/padel_Workers.spec.ts --project=chromium --headless --reporter=html --workers=2
+
+      # Stap 7: Upload HTML report (altijd, zelfs als tests falen)
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
