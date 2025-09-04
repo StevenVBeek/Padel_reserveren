@@ -26,24 +26,31 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      # Stap 3: Setup Node.js
+      # Stap 3: Cache Playwright browsers
+      - name: Cache Playwright browsers
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-browsers
+
+      # Stap 4: Setup Node.js
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
 
-      # Stap 4: Installeer dependencies
+      # Stap 5: Installeer dependencies
       - name: Install dependencies
         run: npm ci
 
-      # Stap 5: Installeer Playwright browsers
+      # Stap 6: Installeer Playwright browsers (alleen download als cache ontbreekt)
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      # Stap 6: Run Playwright tests (Chromium headless, 2 parallelle workers, HTML-report)
+      # Stap 7: Run Playwright tests (Chromium headless, 2 parallelle workers, HTML-report)
       - name: Run Playwright tests
         run: npx playwright test tests/padel_Workers.spec.ts --project=chromium --reporter=html --workers=2
 
-      # Stap 7: Upload HTML report (altijd, zelfs als tests falen)
+      # Stap 8: Upload HTML report (altijd, zelfs als tests falen)
       - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
