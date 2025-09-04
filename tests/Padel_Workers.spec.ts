@@ -11,7 +11,7 @@ async function reserveTime(page, time) {
 
   // Selecteer activiteit + week
   await page.locator('#ctl00_MainContent__advanceSearchResultsUserControl_Activities_ctrl0_lnkActivitySelect_lg').click();
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 5; i++) {
     await page.getByRole('button', { name: 'Next Week ' }).click();
   }
 
@@ -49,14 +49,14 @@ async function reserveTime(page, time) {
   await page.getByRole('link', { name: 'Logout' }).click();
 }
 
-// Worker 1 → 16:45
-test('reserveer 16:45', async ({ page }) => {
-  test.setTimeout(600_000);
-  await reserveTime(page, '16:45');
+// Worker 1 → 19:45
+test('reserveer 19:45', async ({ page }) => {
+  test.setTimeout(10_000);
+  await reserveTime(page, '19:45');
 });
 
-// Worker 2 → 17:30
-test('reserveer 17:30', async ({ page }) => {
-  test.setTimeout(600_000);
-  await reserveTime(page, '17:30');
+// Worker 2 → 20:30
+test('reserveer 20:30', async ({ page }) => {
+  test.setTimeout(10_000);
+  await reserveTime(page, '20:30');
 });
