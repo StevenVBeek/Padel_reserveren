@@ -1,10 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-test('test', async ({ page }) => {
-  test.setTimeout(600_000);
-  await page.goto('https://reserveer.clubpellikaan.nl/Connect/mrmLogin.aspx');
-
+// Razendsnelle functie om een tijdslot te reserveren, max 1 minuut
+async function reserveTime(page, time) {
   // Login
+  await page.goto('https://reserveer.clubpellikaan.nl/Connect/mrmLogin.aspx');
   await page.getByRole('textbox', { name: 'Email Address' }).fill('steven.vanbeek@outlook.com');
   await page.getByRole('textbox', { name: 'Email Address' }).press('Tab');
   await page.getByRole('textbox', { name: 'PIN' }).fill('0964');
@@ -12,80 +11,60 @@ test('test', async ({ page }) => {
 
   // Selecteer activiteit + week
   await page.locator('#ctl00_MainContent__advanceSearchResultsUserControl_Activities_ctrl0_lnkActivitySelect_lg').click();
-  await page.getByRole('button', { name: 'Next Week ' }).click();
-  await page.getByRole('button', { name: 'Next Week ' }).click();
-  await page.getByRole('button', { name: 'Next Week ' }).click();
-  await page.getByRole('button', { name: 'Next Week ' }).click();
-//await page.getByRole('button', { name: 'Next Week ' }).click();
+  for (let i = 0; i < 4; i++) {
+    await page.getByRole('button', { name: 'Next Week ' }).click();
+  }
 
-  // Wacht en probeer maximaal 1000 keer te klikken
-  let clicked = false;
-  let attempts = 0;
-  const maxAttempts = 1000;
+  let reserved = false;
+  const startTime = Date.now();
+  const maxDuration = 60 * 1000; // 1 minuut in milliseconden
 
-  while (!clicked && attempts < maxAttempts) {
+  while (!reserved && (Date.now() - startTime < maxDuration)) {
     try {
       const timestamp = new Date().toLocaleTimeString();
-      console.log(`[${timestamp}] Poging ${attempts + 1}`);
+      console.log(`[${timestamp}] [${time}] Poging om te reserveren`);
 
-      await page.goto('https://reserveer.clubpellikaan.nl/Connect/mrmProductStatus.aspx');
+      // Snelle refresh zonder volledige pagina rebuild
+      await page.reload({ waitUntil: 'domcontentloaded' });
 
-      // Padel baan 2 19:45
-      await page.locator('input[name="ctl00\\$MainContent\\$grdResourceView\\$ctl19\\$ctl01"]').click({ timeout: 1000 });
+      const slot = page.getByText(time).nth(1);
 
-      clicked = true;
-      console.log('Klikken gelukt! Eerste baan is gereseerveerd.');
-    } catch (e) {
-      const timestamp = new Date().toLocaleTimeString();
-      console.log(`[${timestamp}] Knop nog niet beschikbaar, opnieuw proberen over 2 seconden...`);
-      await page.waitForTimeout(2000);
-      attempts++;
+      if (await slot.isVisible()) {
+        await slot.dblclick();
+
+        const bookButton = page.getByRole('button', { name: 'Book' });
+        await expect(bookButton).toBeVisible({ timeout: 500 });
+        await expect(bookButton).toBeEnabled({ timeout: 500 });
+
+        await bookButton.click();
+        reserved = true;
+        console.log(`[${timestamp}] [${time}] Gelukt! Tijdslot geboekt.`);
+      } else {
+        throw new Error(`Slot ${time} niet zichtbaar`);
+      }
+    } catch {
+      // Razendsnelle retry
+      await page.waitForTimeout(20);
     }
   }
 
-  await page.getByRole('button', { name: 'Book' }).click();
-
-  if (!clicked) {
-    console.log(`Na ${maxAttempts} pogingen is het nog steeds niet gelukt om te klikken.`);
-    return;
+  if (!reserved) {
+    const timestamp = new Date().toLocaleTimeString();
+    console.log(`[${timestamp}] [${time}] Kon niet reserveren binnen 1 minuut.`);
   }
 
-  await page.getByRole('link', { name: 'Home' }).click();
-  await page.locator('#ctl00_MainContent__advanceSearchResultsUserControl_Activities_ctrl0_lnkActivitySelect_lg').click();
-  await page.getByRole('button', { name: 'Next Week ' }).click();
-  await page.getByRole('button', { name: 'Next Week ' }).click();
-  await page.getByRole('button', { name: 'Next Week ' }).click();
-//await page.getByRole('button', { name: 'Next Week ' }).click();
-
-  let clicked1 = false;
-  let attempts1 = 0;
-
-  while (!clicked1 && attempts1 < maxAttempts) {
-    try {
-      const timestamp = new Date().toLocaleTimeString();
-      console.log(`[${timestamp}] Poging ${attempts1 + 1}`);
-
-      await page.goto('https://reserveer.clubpellikaan.nl/Connect/mrmProductStatus.aspx');
-
-      // Padel baan 2 20:30
-      await page.locator('input[name="ctl00\\$MainContent\\$grdResourceView\\$ctl20\\$ctl01"]').click({ timeout: 1000 });
-
-      clicked1 = true;
-      console.log('Klikken gelukt! Tweede baan is gereseerveerd.');
-    } catch (e) {
-      const timestamp = new Date().toLocaleTimeString();
-      console.log(`[${timestamp}] Knop nog niet beschikbaar, opnieuw proberen over 2 seconden...`);
-      await page.waitForTimeout(2000);
-      attempts1++;
-    }
-  }
-
-  await page.getByRole('button', { name: 'Book' }).click();
-
-  if (!clicked1) {
-    console.log(`Na ${maxAttempts} pogingen is het nog steeds niet gelukt om te klikken.`);
-    return;
-  }
-
+  // Logout
   await page.getByRole('link', { name: 'Logout' }).click();
+}
+
+// Worker 1 → 16:45
+test('reserveer 16:45', async ({ page }) => {
+  test.setTimeout(600_000);
+  await reserveTime(page, '16:45');
+});
+
+// Worker 2 → 17:30
+test('reserveer 17:30', async ({ page }) => {
+  test.setTimeout(600_000);
+  await reserveTime(page, '17:30');
 });
