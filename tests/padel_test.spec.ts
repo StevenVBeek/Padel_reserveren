@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-// Razendsnelle functie om een tijdslot te reserveren, max 1 minuut
+// Razendsnelle functie om een tijdslot te reserveren
 async function reserveTime(page, time) {
   // Login
   await page.goto('https://reserveer.clubpellikaan.nl/Connect/mrmLogin.aspx');
@@ -16,15 +16,12 @@ async function reserveTime(page, time) {
   }
 
   let reserved = false;
-  const startTime = Date.now();
-  const maxDuration = 60 * 1000; // 1 minuut in milliseconden
-
-  while (!reserved && (Date.now() - startTime < maxDuration)) {
+  while (!reserved) {
     try {
       const timestamp = new Date().toLocaleTimeString();
       console.log(`[${timestamp}] [${time}] Poging om te reserveren`);
 
-      // Snelle refresh zonder volledige pagina rebuild
+      // Snelle refresh zonder de volledige pagina opnieuw op te bouwen
       await page.reload({ waitUntil: 'domcontentloaded' });
 
       const slot = page.getByText(time).nth(1);
@@ -48,23 +45,18 @@ async function reserveTime(page, time) {
     }
   }
 
-  if (!reserved) {
-    const timestamp = new Date().toLocaleTimeString();
-    console.log(`[${timestamp}] [${time}] Kon niet reserveren binnen 1 minuut.`);
-  }
-
   // Logout
   await page.getByRole('link', { name: 'Logout' }).click();
 }
 
 // Worker 1 → 16:45
 test('reserveer 16:45', async ({ page }) => {
-  test.setTimeout(600_000);
+  test.setTimeout(20_000);
   await reserveTime(page, '16:45');
 });
 
 // Worker 2 → 17:30
 test('reserveer 17:30', async ({ page }) => {
-  test.setTimeout(600_000);
+  test.setTimeout(20_000);
   await reserveTime(page, '17:30');
 });
