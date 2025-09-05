@@ -73,7 +73,7 @@ async function reserveTime(page, time) {
       }
     }
 
-    if (!reserved) await page.waitForTimeout(2000); // 2 sec wachten
+    if (!reserved) await page.waitForTimeout(200); // 200 ms wachten
   }
 
   if (!reserved) {
