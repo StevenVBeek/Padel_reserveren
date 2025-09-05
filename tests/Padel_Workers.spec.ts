@@ -61,10 +61,10 @@ async function reserveTime(page, time) {
       await bookButton.click();
       console.log(`[${timestamp}] [${time}] Gelukt! Tijdslot geboekt voor ${formattedDate}.`);
     } catch {
-      console.log(`[${timestamp}] [${time}] Book-knop niet beschikbaar.`);
+      throw new Error(`[${timestamp}] [${time}] Book-knop niet beschikbaar → reservering mislukt.`);
     }
   } else {
-    console.log(`[${timestamp}] [${time}] Slot ${time} NIET zichtbaar, geen reservering gemaakt.`);
+    throw new Error(`[${timestamp}] [${time}] Slot ${time} NIET zichtbaar → reservering mislukt.`);
   }
 
   // Logout
@@ -73,12 +73,12 @@ async function reserveTime(page, time) {
 
 // Worker 1 → 19:45
 test('reserveer 19:45', async ({ page }) => {
-  test.setTimeout(1 * 60 * 1000); // max 1 minuut runtime
+  test.setTimeout(2 * 60 * 1000); // max 2 minuten runtime
   await reserveTime(page, '19:45');
 });
 
 // Worker 2 → 20:30
 test('reserveer 20:30', async ({ page }) => {
-  test.setTimeout(1 * 60 * 1000); // max 1 minuut runtime
+  test.setTimeout(2 * 60 * 1000); // max 2 minuten runtime
   await reserveTime(page, '20:30');
 });
