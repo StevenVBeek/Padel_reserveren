@@ -76,10 +76,12 @@ async function reserveTime(page, time) {
 
 // Worker 1 → 19:45
 test('reserveer 19:45', async ({ page }) => {
+  test.setTimeout(2 * 60 * 1000); // max 2 minuten runtime
   await reserveTime(page, '19:45');
 });
 
 // Worker 2 → 20:30
 test('reserveer 20:30', async ({ page }) => {
+  test.setTimeout(2 * 60 * 1000); // max 2 minuten runtime
   await reserveTime(page, '20:30');
 });
