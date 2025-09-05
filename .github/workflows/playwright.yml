@@ -39,7 +39,7 @@ jobs:
 
       # Stap 6: Run Playwright tests (Chromium headless, 2 parallelle workers, HTML-report)
       - name: Run Playwright tests
-        run: npx playwright test tests/padel_Workers.spec.ts --project=chromium --reporter=html --workers=2
+        run: npx playwright test tests/padel_Workers.spec.ts --project=chromium --reporter=html --workers=2 --retries=0
 
       # Stap 7: Upload HTML report (altijd, zelfs als tests falen)
       - uses: actions/upload-artifact@v4
