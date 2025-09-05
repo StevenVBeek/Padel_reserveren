@@ -52,7 +52,7 @@ async function reserveTime(page, time) {
   // Pogingen voor tijdslot max 10 minuten
   const startTime = Date.now();
   let reserved = false;
-  while (!reserved && Date.now() - startTime < 10 * 60 * 1000) { // 10 minuten
+  while (!reserved && Date.now() - startTime < 2 * 60 * 1000) { // 2 minuten
     const timestamp = new Date().toLocaleTimeString();
     console.log(`[${timestamp}] [${time}] Poging om te reserveren`);
 
