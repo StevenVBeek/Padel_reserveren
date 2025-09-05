@@ -14,7 +14,7 @@ async function reserveTime(page, time) {
 
   // Bereken doel-datum: vandaag + 5 dagen
   const targetDate = new Date();
-  targetDate.setDate(targetDate.getDate() + 5);
+  targetDate.setDate(targetDate.getDate() + 4);
 
   // Handmatige korte maandnamen (3 letters, geen "Sept")
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -81,12 +81,12 @@ async function reserveTime(page, time) {
 
 // Worker 1 → 19:45
 test('reserveer 19:45', async ({ page }) => {
-  test.setTimeout(10_000);
-  await reserveTime(page, '19:45');
+  test.setTimeout(600_000);
+  await reserveTime(page, '21:15');
 });
 
 // Worker 2 → 20:30
 test('reserveer 20:30', async ({ page }) => {
-  test.setTimeout(10_000);
+  test.setTimeout(600_000);
   await reserveTime(page, '20:30');
 });
