@@ -1,6 +1,20 @@
 import { test, expect } from '@playwright/test';
 
-// Razendsnelle functie om een tijdslot te reserveren
+// === Doeldatum 1x berekenen bij script-start ===
+const baseDate = new Date();
+baseDate.setDate(baseDate.getDate() + 5);
+
+const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+const day = String(baseDate.getDate()).padStart(2, "0");
+const month = months[baseDate.getMonth()];
+const weekday = weekdays[baseDate.getDay()];
+
+const formattedDate = `${weekday} ${day} ${month}`;
+console.log(`Doeldatum voor reservering (vastgezet bij start): ${formattedDate}`);
+
+// Functie om een tijdslot 1x te proberen
 async function reserveTime(page, time) {
   // Login
   await page.goto('https://reserveer.clubpellikaan.nl/Connect/mrmLogin.aspx');
@@ -9,26 +23,10 @@ async function reserveTime(page, time) {
   await page.getByRole('textbox', { name: 'PIN' }).fill('0964');
   await page.getByRole('button', { name: 'Login' }).click();
 
-  // Selecteer activiteit
+  // Activiteit kiezen
   await page.locator('#ctl00_MainContent__advanceSearchResultsUserControl_Activities_ctrl0_lnkActivitySelect_lg').click();
 
-  // Bereken doel-datum: vandaag + 5 dagen
-  const targetDate = new Date();
-  targetDate.setDate(targetDate.getDate() + 5);
-
-  // Handmatige korte maandnamen (3 letters, geen "Sept")
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-  const day = String(targetDate.getDate()).padStart(2, "0");
-  const month = months[targetDate.getMonth()];
-  const weekday = weekdays[targetDate.getDay()];
-
-  // Format exact zoals de site: "Wed 10 Sep"
-  const formattedDate = `${weekday} ${day} ${month}`;
-  console.log(`Doeldatum voor reservering: ${formattedDate}`);
-
-  // Klik net zolang op "Next Week" totdat de juiste datum zichtbaar is
+  // Doeldatum selecteren
   let dateVisible = false;
   while (!dateVisible) {
     try {
@@ -46,33 +44,27 @@ async function reserveTime(page, time) {
     }
   }
 
-  // Probeer reserveren
-  let reserved = false;
-  while (!reserved) {
+  // 1 poging om tijdslot te reserveren
+  const timestamp = new Date().toLocaleTimeString();
+  console.log(`[${timestamp}] [${time}] Eenmalige poging om te reserveren`);
+
+  await page.reload({ waitUntil: 'domcontentloaded' });
+
+  const slot = page.getByText(time).nth(1);
+
+  if (await slot.isVisible()) {
+    await slot.dblclick();
+    const bookButton = page.getByRole('button', { name: 'Book' });
     try {
-      const timestamp = new Date().toLocaleTimeString();
-      console.log(`[${timestamp}] [${time}] Poging om te reserveren`);
-
-      await page.reload({ waitUntil: 'domcontentloaded' });
-
-      const slot = page.getByText(time).nth(1);
-
-      if (await slot.isVisible()) {
-        await slot.dblclick();
-
-        const bookButton = page.getByRole('button', { name: 'Book' });
-        await expect(bookButton).toBeVisible({ timeout: 500 });
-        await expect(bookButton).toBeEnabled({ timeout: 500 });
-
-        await bookButton.click();
-        reserved = true;
-        console.log(`[${timestamp}] [${time}] Gelukt! Tijdslot geboekt voor ${formattedDate}.`);
-      } else {
-        throw new Error(`Slot ${time} niet zichtbaar`);
-      }
+      await expect(bookButton).toBeVisible({ timeout: 1000 });
+      await expect(bookButton).toBeEnabled({ timeout: 1000 });
+      await bookButton.click();
+      console.log(`[${timestamp}] [${time}] Gelukt! Tijdslot geboekt voor ${formattedDate}.`);
     } catch {
-      await page.waitForTimeout(20);
+      console.log(`[${timestamp}] [${time}] Book-knop niet beschikbaar.`);
     }
+  } else {
+    console.log(`[${timestamp}] [${time}] Slot ${time} NIET zichtbaar, geen reservering gemaakt.`);
   }
 
   // Logout
@@ -81,12 +73,12 @@ async function reserveTime(page, time) {
 
 // Worker 1 → 19:45
 test('reserveer 19:45', async ({ page }) => {
-  test.setTimeout(10_000);
+  test.setTimeout(1 * 60 * 1000); // max 1 minuut runtime
   await reserveTime(page, '19:45');
 });
 
 // Worker 2 → 20:30
 test('reserveer 20:30', async ({ page }) => {
-  test.setTimeout(10_000);
+  test.setTimeout(1 * 60 * 1000); // max 1 minuut runtime
   await reserveTime(page, '20:30');
 });
