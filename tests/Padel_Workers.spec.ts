@@ -14,13 +14,6 @@ const weekday = weekdays[baseDate.getDay()];
 const formattedDate = `${weekday} ${day} ${month}`;
 console.log(`Doeldatum voor reservering (vastgezet bij start): ${formattedDate}`);
 
-// === Playwright setup voor screenshots, video en trace ===
-test.use({
-  trace: 'retain-on-failure',      // trace opnemen bij falen
-  screenshot: 'only-on-failure',   // screenshot bij falen
-  video: 'retain-on-failure',      // video bij falen
-});
-
 // Razendsnelle functie om een tijdslot te reserveren
 async function reserveTime(page, time) {
   // Login
@@ -91,10 +84,10 @@ async function reserveTime(page, time) {
   await page.getByRole('link', { name: 'Logout' }).click();
 }
 
-// Worker 1 → 21:15
-test('reserveer 21:15', async ({ page }) => {
+// Worker 1 → 19:45
+test('reserveer 19:45', async ({ page }) => {
   test.setTimeout(2 * 60_000); // max 2 minuten per test
-  await reserveTime(page, '21:15');
+  await reserveTime(page, '19:45');
 });
 
 // Worker 2 → 20:30
