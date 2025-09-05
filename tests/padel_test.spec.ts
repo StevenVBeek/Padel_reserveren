@@ -1,5 +1,19 @@
 import { test, expect } from '@playwright/test';
 
+// === Doeldatum 1x berekenen bij script-start ===
+const baseDate = new Date();
+baseDate.setDate(baseDate.getDate() + 5);
+
+const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+const day = String(baseDate.getDate()).padStart(2, "0");
+const month = months[baseDate.getMonth()];
+const weekday = weekdays[baseDate.getDay()];
+
+const formattedDate = `${weekday} ${day} ${month}`;
+console.log(`Doeldatum voor reservering (vastgezet bij start): ${formattedDate}`);
+
 // Razendsnelle functie om een tijdslot te reserveren
 async function reserveTime(page, time) {
   // Login
@@ -14,20 +28,8 @@ async function reserveTime(page, time) {
 
   // Bereken doel-datum: vandaag + 5 dagen
   const targetDate = new Date();
-  targetDate.setDate(targetDate.getDate() + 4);
-
-  // Handmatige korte maandnamen (3 letters, geen "Sept")
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-  const day = String(targetDate.getDate()).padStart(2, "0");
-  const month = months[targetDate.getMonth()];
-  const weekday = weekdays[targetDate.getDay()];
-
-  // Format exact zoals de site: "Wed 10 Sep"
-  const formattedDate = `${weekday} ${day} ${month}`;
-  console.log(`Doeldatum voor reservering: ${formattedDate}`);
-
+  targetDate.setDate(targetDate.getDate() + 5);
+  
   // Klik net zolang op "Next Week" totdat de juiste datum zichtbaar is
   let dateVisible = false;
   while (!dateVisible) {
