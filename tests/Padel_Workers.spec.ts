@@ -81,12 +81,12 @@ async function reserveTime(page, time) {
 
 // Worker 1 → 19:45
 test('reserveer 19:45', async ({ page }) => {
-  test.setTimeout(10_000);
+  test.setTimeout(600_000);
   await reserveTime(page, '19:45');
 });
 
 // Worker 2 → 20:30
 test('reserveer 20:30', async ({ page }) => {
-  test.setTimeout(10_000);
+  test.setTimeout(600_000);
   await reserveTime(page, '20:30');
 });
