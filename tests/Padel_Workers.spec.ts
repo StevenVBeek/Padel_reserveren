@@ -14,6 +14,13 @@ const weekday = weekdays[baseDate.getDay()];
 const formattedDate = `${weekday} ${day} ${month}`;
 console.log(`Doeldatum voor reservering (vastgezet bij start): ${formattedDate}`);
 
+// === Playwright setup voor screenshots, video en trace ===
+test.use({
+  trace: 'retain-on-failure',      // trace opnemen bij falen
+  screenshot: 'only-on-failure',   // screenshot bij falen
+  video: 'retain-on-failure',      // video bij falen
+});
+
 // Razendsnelle functie om een tijdslot te reserveren
 async function reserveTime(page, time) {
   // Login
@@ -49,10 +56,10 @@ async function reserveTime(page, time) {
     throw new Error(`Doeldatum ${formattedDate} niet zichtbaar binnen 10 seconden.`);
   }
 
-  // Pogingen voor tijdslot max 10 minuten
+  // Pogingen voor tijdslot max 2 minuten
   const startTime = Date.now();
   let reserved = false;
-  while (!reserved && Date.now() - startTime < 2 * 60 * 1000) { // 2 minuten
+  while (!reserved && Date.now() - startTime < 2 * 60_000) { // 2 minuten
     const timestamp = new Date().toLocaleTimeString();
     console.log(`[${timestamp}] [${time}] Poging om te reserveren`);
 
@@ -77,7 +84,7 @@ async function reserveTime(page, time) {
   }
 
   if (!reserved) {
-    throw new Error(`Kan tijdslot ${time} niet reserveren binnen 10 minuten.`);
+    throw new Error(`Kan tijdslot ${time} niet reserveren binnen 2 minuten.`);
   }
 
   // Logout
@@ -86,12 +93,12 @@ async function reserveTime(page, time) {
 
 // Worker 1 → 21:15
 test('reserveer 21:15', async ({ page }) => {
-  test.setTimeout(2 * 60_000); // max 2 minuten per test
+  test.setTimeout(3 * 60_000); // max 3 minuten per test
   await reserveTime(page, '21:15');
 });
 
 // Worker 2 → 20:30
 test('reserveer 20:30', async ({ page }) => {
-  test.setTimeout(2 * 60_000); // max 2 minuten per test
+  test.setTimeout(3 * 60_000);
   await reserveTime(page, '20:30');
 });
