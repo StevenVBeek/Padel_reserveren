@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 // === Doeldatum 1x berekenen bij script-start ===
 const baseDate = new Date();
-baseDate.setDate(baseDate.getDate() + 5);
+baseDate.setDate(baseDate.getDate() + 4); // 4 dagen vooruit
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -85,13 +85,13 @@ async function reserveTime(page, time) {
 }
 
 // Worker 1 → 19:45
-test('reserveer 19:45', async ({ page }) => {
-  test.setTimeout(10 * 60_000); // max 10 minuten per test
-  await reserveTime(page, '19:45');
-});
+// test('reserveer 19:45', async ({ page }) => {
+//   test.setTimeout(10 * 60_000); // max 10 minuten per test
+//   await reserveTime(page, '19:45');
+// });
 
 // Worker 2 → 20:30
 test('reserveer 20:30', async ({ page }) => {
   test.setTimeout(10 * 60_000);
-  await reserveTime(page, '20:30');
+  await reserveTime(page, '21:15');
 });
