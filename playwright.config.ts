@@ -29,31 +29,32 @@ export default defineConfig({
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-   // Capture screenshot after each test failure.
+    // Capture screenshot after each test failure.
     screenshot: 'on',
 
     // Record trace only when retrying a test for the first time.
     trace: 'on',
 
     // Record video only when retrying a test for the first time.
-    video: 'on'
+    video: 'on',
+
+    // hier pas je de viewport aan
+    viewport: { width: 1920, height: 1080 }
   },
 
   /* Configure projects for major browsers */
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1920, height: 1080 } },
     },
-
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: { ...devices['Desktop Firefox'], viewport: { width: 1920, height: 1080 } },
     },
-
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      use: { ...devices['Desktop Safari'], viewport: { width: 1920, height: 1080 } },
     },
 
     /* Test against mobile viewports. */
