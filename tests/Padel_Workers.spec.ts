@@ -41,7 +41,7 @@ async function reserveTime(page, time) {
       }
     } catch {
       await page.getByRole('button', { name: 'Next Week ' }).click();
-      await page.waitForTimeout(100);
+      await page.waitForTimeout(200);
     }
   }
 
@@ -49,29 +49,31 @@ async function reserveTime(page, time) {
     throw new Error(`Doeldatum ${formattedDate} niet zichtbaar binnen 10 seconden.`);
   }
 
-  // Pogingen voor tijdslot max 10 minuten
+  // Pogingen voor tijdslot max 2 minuten
   const startTime = Date.now();
   let reserved = false;
   while (!reserved && Date.now() - startTime < 10 * 60_000) { // 10 minuten
     const timestamp = new Date().toLocaleTimeString();
     console.log(`[${timestamp}] [${time}] Poging om te reserveren`);
 
-    try {
-      const slot = page.getByText(time).nth(1);
-      await slot.waitFor({ state: 'visible', timeout: 200 });
-      await slot.click();
+    await page.reload({ waitUntil: 'domcontentloaded' });
 
+    const slot = page.getByText(time).nth(1);
+    if (await slot.isVisible()) {
+      await slot.dblclick();
       const bookButton = page.getByRole('button', { name: 'Book' });
-      await expect(bookButton).toBeVisible({ timeout: 200 });
-      await expect(bookButton).toBeEnabled({ timeout: 200 });
-      await bookButton.click();
-
-      reserved = true;
-      console.log(`[${timestamp}] [${time}] ✅ Gelukt! Tijdslot geboekt voor ${formattedDate}.`);
-    } catch {
-      console.log(`[${timestamp}] [${time}] Nog niet beschikbaar, opnieuw proberen...`);
-      await page.waitForTimeout(50); // kleine pauze
+      try {
+        await expect(bookButton).toBeVisible({ timeout: 200 });
+        await expect(bookButton).toBeEnabled({ timeout: 200 });
+        await bookButton.click();
+        reserved = true;
+        console.log(`[${timestamp}] [${time}] Gelukt! Tijdslot geboekt voor ${formattedDate}.`);
+      } catch {
+        console.log(`[${timestamp}] [${time}] Book-knop niet beschikbaar, opnieuw proberen...`);
+      }
     }
+
+    if (!reserved) await page.waitForTimeout(50); // 50 ms wachten
   }
 
   if (!reserved) {
@@ -84,12 +86,12 @@ async function reserveTime(page, time) {
 
 // Worker 1 → 19:45
 // test('reserveer 19:45', async ({ page }) => {
-// test.setTimeout(10 * 60_000); // max 10 minuten per test
-// await reserveTime(page, '19:45');
+//   test.setTimeout(10 * 60_000); // max 10 minuten per test
+//   await reserveTime(page, '19:45');
 // });
 
 // Worker 2 → 20:30
-test('reserveer 20:30', async ({ page }) => {
+test('reserveer 21:15', async ({ page }) => {
   test.setTimeout(10 * 60_000);
   await reserveTime(page, '21:15');
 });
