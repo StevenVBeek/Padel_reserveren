@@ -39,22 +39,22 @@ export default defineConfig({
     video: 'on',
 
     // hier pas je de viewport aan
-    viewport: { width: 2800, height: 2100 }
+    viewport: { width: 2560, height: 1600 }
   },
 
   /* Configure projects for major browsers */
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'], viewport: { width: 2800, height: 2100 } },
+      use: { ...devices['Desktop Chrome'], viewport: { width: 2560, height: 1600 } },
     },
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'], viewport: { width: 2800, height: 2100 } },
+      use: { ...devices['Desktop Firefox'], viewport: { width: 2560, height: 1600 } },
     },
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'], viewport: { width: 2800, height: 2100 } },
+      use: { ...devices['Desktop Safari'], viewport: { width: 2560, height: 1600 } },
     },
 
     /* Test against mobile viewports. */
