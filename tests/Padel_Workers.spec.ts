@@ -52,7 +52,7 @@ async function reserveTime(page, time) {
   // Pogingen voor tijdslot max 2 minuten
   const startTime = Date.now();
   let reserved = false;
-  while (!reserved && Date.now() - startTime < 2 * 60_000) { // 2 minuten
+  while (!reserved && Date.now() - startTime < 10 * 60_000) { // 10 minuten
     const timestamp = new Date().toLocaleTimeString();
     console.log(`[${timestamp}] [${time}] Poging om te reserveren`);
 
@@ -86,12 +86,12 @@ async function reserveTime(page, time) {
 
 // Worker 1 → 19:45
 test('reserveer 19:45', async ({ page }) => {
-  test.setTimeout(2 * 60_000); // max 2 minuten per test
+  test.setTimeout(10 * 60_000); // max 10 minuten per test
   await reserveTime(page, '19:45');
 });
 
 // Worker 2 → 20:30
 test('reserveer 20:30', async ({ page }) => {
-  test.setTimeout(2 * 60_000);
+  test.setTimeout(10 * 60_000);
   await reserveTime(page, '20:30');
 });
